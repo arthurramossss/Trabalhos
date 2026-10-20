@@ -188,7 +188,7 @@ button {
       rgba(29, 35, 41, .15) 0%,       /* topo: quase sem escurecer */
       rgba(29, 35, 41, .55) 55%,      /* meio: escurece */
       var(--escuro) 100%),            /* base: totalmente escuro */
-    url('https://github.com/arthurramossss/imagens/blob/main/fundo%20barbearia.jpeg')
+    url('fundo-barbearia.jpeg')
     center / cover no-repeat;         /* center/cover = a foto preenche tudo, centralizada */
 }
 
