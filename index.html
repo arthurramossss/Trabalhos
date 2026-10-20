@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- ============================================================
+       CABEÇALHO TÉCNICO (<head>)
+       Aqui ficam informações que o navegador lê, mas que não
+       aparecem na tela: título da aba, fontes, arquivo de CSS.
+       ============================================================ -->
+  <meta charset="utf-8">
+  <!-- Faz o site se ajustar direito em celular -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Texto que aparece na aba do navegador -->
+  <title>JL Barbearia | Conceição do Coité</title>
+
+  <!-- Fonte "Manrope", carregada do Google Fonts (precisa de internet) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap">
+
+  <!-- Liga este HTML ao arquivo de estilos (cores, tamanhos, layout).
+       O style.css precisa estar na MESMA pasta do index.html -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       MENU DO TOPO (<header>)
+       Barra fixa com o nome da barbearia, os links e o botão.
+       Os href="#algo" rolam a página até o id="algo" lá embaixo.
+       ============================================================ -->
+  <header class="topo">
+    <div class="container topo__conteudo">
+      <a class="topo__logo" href="#inicio">JL Barbearia</a>
+
+      <!-- <nav> = grupo de links de navegação -->
+      <nav class="topo__menu">
+        <a href="#servicos">Serviços</a>
+        <a href="#equipe">Equipe</a>
+        <a href="#avaliacoes">Avaliações</a>
+        <a href="#visita">Onde estamos</a>
+      </nav>
+
+      <!-- Botão que abre o menu de agendamento (a "sheet" que sobe
+           de baixo). Por enquanto ele só mostra o layout: escolher
+           de verdade ainda não reserva nada de verdade num banco de
+           dados, isso é o próximo passo. -->
+      <button type="button" class="botao js-abrir-agendamento">Agendar</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         1) PRIMEIRA DOBRA (hero)
+         É a primeira coisa que a pessoa vê. A foto da barbearia
+         NÃO está aqui: ela é colocada pelo CSS (classe .hero),
+         para poder ter o degradê escurecendo para baixo.
+         ============================================================ -->
+    <section class="hero" id="inicio">
+      <div class="container hero__conteudo">
+        <h1>JL Barbearia</h1>
+        <p>Cortes, barba e acabamento no Centro de Conceição do Coité.</p>
+
+        <div class="hero__botoes">
+          <button type="button" class="botao js-abrir-agendamento">Agendar horário</button>
+          <a class="botao botao--contorno" href="#servicos">Ver preços</a>
+        </div>
+
+        <!-- Selo com a nota (dados do Booksy) -->
+        <p class="hero__nota">★ 5.0 em 455 avaliações de clientes</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         2) SERVIÇOS E PREÇOS
+         Agora dividido em 2 SUPERTÓPICOS (um por barbeiro), cada um
+         com os mesmos subtópicos de antes (Cortes, Barba, Combos...).
+
+         Cada <li> é uma linha da lista de preços:
+         nome do serviço + detalhe + preço.
+         Para mudar um preço, edite o texto dentro de <strong>.
+
+         IMPORTANTE: o Booksy não separa o cardápio inteiro por
+         barbeiro, só alguns itens diziam "com o Jardel" ou "com o
+         Xande". A divisão abaixo foi feita combinando essas pistas
+         com a especialidade de cada um (ver seção Equipe). Vale
+         confirmar com os dois se algum item está no barbeiro errado.
+         ============================================================ -->
+    <section class="secao secao--escura" id="servicos">
+      <div class="container">
+        <h2>Serviços e preços</h2>
+        <p class="secao__intro">Escolha o serviço, o barbeiro e o horário direto no agendamento online, 24 horas por dia.</p>
+
+        <!-- ===== SUPERTÓPICO 1: XANDE ===== -->
+        <div class="servicos-barbeiro">
+          <h3 class="servicos-barbeiro__titulo">Serviços com Xande</h3>
+
+          <div class="precos">
+            <div class="precos__coluna">
+              <h4>Barba e acabamento</h4>
+              <ul class="lista-precos">
+                <li><span>Barba detalhada/degradê<small>25 min</small></span><strong>R$ 15</strong></li>
+                <li><span>Sobrancelha</span><strong>R$ 6</strong></li>
+                <li><span>Alinhamento de bigode</span><strong>R$ 4</strong></li>
+              </ul>
+            </div>
+
+            <div class="precos__coluna">
+              <h4>Combos</h4>
+              <ul class="lista-precos">
+                <li><span>Cabelo, barba e sobrancelha</span><strong>R$ 50</strong></li>
+              </ul>
+
+              <h4>Química e cor</h4>
+              <ul class="lista-precos">
+                <li><span>Pigmentação de barba</span><strong>R$ 15</strong></li>
+                <li><span>Tintura no cabelo</span><strong>R$ 20</strong></li>
+                <li><span>Platinado<small>2h</small></span><strong>R$ 50</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SUPERTÓPICO 2: JARDEL ===== -->
+        <div class="servicos-barbeiro">
+          <h3 class="servicos-barbeiro__titulo">Serviços com Jardel</h3>
+
+          <div class="precos">
+            <div class="precos__coluna">
+              <h4>Cortes</h4>
+              <ul class="lista-precos">
+                <li><span>Corte de cabelo<small>Graduação de pentes, 40 min</small></span><strong>R$ 30</strong></li>
+                <li><span>Corte com tesoura<small>Mais trabalhado, 40 min</small></span><strong>R$ 35</strong></li>
+                <li><span>Corte infantil na tesoura<small>30 min</small></span><strong>R$ 28</strong></li>
+                <li><span>Pezinho<small>10 min</small></span><strong>R$ 10</strong></li>
+                <li><span>Pezinho Prime<small>Limpeza do contorno e máquina, 20 min</small></span><strong>R$ 15</strong></li>
+              </ul>
+
+              <h4>Barba e acabamento</h4>
+              <ul class="lista-precos">
+                <li><span>Barba<small>Contornos e desenho, 25 min</small></span><strong>R$ 20</strong></li>
+                <li><span>Barba e pé<small>A partir de</small></span><strong>R$ 25</strong></li>
+              </ul>
+            </div>
+
+            <div class="precos__coluna">
+              <h4>Combos</h4>
+              <ul class="lista-precos">
+                <li><span>Cabelo e sobrancelha<small>40 min</small></span><strong>R$ 35</strong></li>
+                <li><span>Corte e barba<small>50 min</small></span><strong>R$ 50</strong></li>
+                <li><span>Lavagem, hidratação e modelagem<small>20 min</small></span><strong>R$ 15</strong></li>
+              </ul>
+
+              <h4>Química e cor</h4>
+              <ul class="lista-precos">
+                <li><span>Alisamento americano</span><strong>R$ 25</strong></li>
+                <li><span>Selagem / progressiva<small>1h10</small></span><strong>R$ 65</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         3) EQUIPE
+         Um "cartão" (.barbeiro) para cada barbeiro.
+         Para adicionar mais um, copie um bloco <article> inteiro.
+         ============================================================ -->
+    <section class="secao secao--clara" id="equipe">
+      <div class="container">
+        <h2>Nossa equipe</h2>
+        <p class="secao__intro">Cada barbeiro tem sua agenda. Você escolhe com quem quer ser atendido.</p>
+
+        <div class="equipe">
+
+          <article class="barbeiro">
+            <!-- Fotos salvas na mesma pasta do index.html e do
+                 style.css (jardel.jpeg e xande.jpeg) -->
+            <img src="jardel.jpeg" alt="Jardel Lima, barbeiro" loading="lazy">
+            <h3>Jardel Lima</h3>
+            <p>Cortes, combos, barba e modelagem.</p>
+          </article>
+
+          <article class="barbeiro">
+            <img src="xande.jpeg" alt="Xande Elexias, barbeiro" loading="lazy">
+            <h3>Xande Elexias</h3>
+            <p>Barba detalhada, sobrancelha e platinado.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         4) AVALIAÇÕES
+         <blockquote> = citação. Cada uma é um depoimento de cliente.
+         ============================================================ -->
+    <section class="secao secao--clara secao--sem-topo" id="avaliacoes">
+      <div class="container">
+        <h2>O que os clientes dizem</h2>
+        <p class="secao__intro">Nota média 5.0 em 455 avaliações de clientes confirmados no Booksy.</p>
+
+        <div class="avaliacoes">
+          <blockquote>
+            <p>Excelente trabalho, corte de qualidade e confiança!!</p>
+            <footer>Junior, corte de cabelo com Jardel</footer>
+          </blockquote>
+          <blockquote>
+            <p>O melhor barbeiro do mundo, top e de qualidade.</p>
+            <footer>Matheus Oliveira, cabelo, barba e sobrancelha com Jardel</footer>
+          </blockquote>
+          <blockquote>
+            <p>Excelente.</p>
+            <footer>Guilherme, corte de cabelo com Jardel</footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         5) ONDE ESTAMOS
+         Endereço, botão de agendar, comodidades e Instagram.
+         ============================================================ -->
+    <section class="secao secao--escura" id="visita">
+      <div class="container visita">
+
+        <div>
+          <h2>Onde estamos</h2>
+          <!-- <address> = tag própria para endereços -->
+          <address>
+            R. Hermógenes Leite, 36<br>
+            Centro, Conceição do Coité, BA<br>
+            CEP 48730-000
+          </address>
+          <button type="button" class="botao js-abrir-agendamento">Agendar online</button>
+        </div>
+
+        <div>
+          <h3>Comodidades</h3>
+          <ul class="etiquetas">
+            <li>Cartão de crédito</li>
+            <li>Acessível</li>
+            <li>Wi-Fi</li>
+          </ul>
+          <p><a class="link" href="https://www.instagram.com/jlbarbershopp" target="_blank" rel="noopener">Veja os cortes no Instagram @jlbarbershopp</a></p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       MENU DE AGENDAMENTO (bottom sheet)
+       Fica escondido até clicar em algum botão "Agendar". Some com
+       um fundo escuro atrás (.overlay) e o painel sobe do rodapé
+       da tela (.sheet). Por enquanto é só a interface: os botões
+       "Agendar" e "Notificar quando disponível" ainda não gravam
+       nada de verdade, isso entra na próxima etapa (o sistema de
+       armazenamento).
+       ============================================================ -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet__alca"></div>
+
+    <!-- Seletor de barbeiro: dropdown feito do zero, no tema do
+         site, em vez do <select> nativo do navegador (que abre um
+         menu fora do padrão visual e muda de cara em cada celular). -->
+    <div class="campo">
+      <label>Barbeiro</label>
+      <div class="seletor" id="seletorBarbeiro">
+        <button type="button" class="seletor__valor" id="barbeiroValor">
+          <span id="barbeiroTexto">Jardel Lima</span>
+          <span class="seletor__seta">▾</span>
+        </button>
+        <div class="seletor__lista" id="barbeiroLista">
+          <button type="button" class="seletor__opcao ativo" data-nome="Jardel Lima">
+            <span class="seletor__radio"></span>Jardel Lima
+          </button>
+          <button type="button" class="seletor__opcao" data-nome="Xande Elexias">
+            <span class="seletor__radio"></span>Xande Elexias
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Mês</label>
+      <div class="fileira-scroll" id="meses"></div>
+    </div>
+
+    <div class="campo">
+      <label>Dia</label>
+      <p class="dia__legenda">A cor da bolinha mostra o quanto o dia já está ocupado: verde é mais livre, vermelho é mais cheio.</p>
+      <div class="semana" id="semana"></div>
+      <div class="grade-dias" id="dias"></div>
+    </div>
+
+    <div class="campo">
+      <label>Horário</label>
+      <p class="horarios__aviso" id="horariosAviso">Escolha um dia para ver os horários.</p>
+      <div class="fileira-scroll" id="horarios" style="display:none;"></div>
+    </div>
+
+    <!-- Nome e WhatsApp do cliente. Sem login, sem senha — só o
+         suficiente pro barbeiro saber quem marcou e poder chamar
+         no WhatsApp se precisar. -->
+    <div class="campo">
+      <label for="clienteNome">Seu nome</label>
+      <input type="text" id="clienteNome" placeholder="Nome completo">
+    </div>
+    <div class="campo">
+      <label for="clienteWhatsapp">Seu WhatsApp</label>
+      <input type="tel" id="clienteWhatsapp" placeholder="(75) 99999-9999">
+    </div>
+
+    <div class="sheet__botoes">
+      <button type="button" class="botao" id="btnAgendar" style="flex:1">Agendar</button>
+      <button type="button" class="botao botao--contorno" id="btnNotificar" style="flex:1">Notificar quando disponível</button>
+    </div>
+  </div>
+
+  <!-- RODAPÉ
+       Tem 3 partes: nome e endereço, contatos (WhatsApp e Instagram)
+       e a linha de direitos reservados. -->
+  <footer class="rodape">
+    <div class="container rodape__conteudo">
+
+      <div>
+        <strong>JL Barbearia</strong>
+        <p>R. Hermógenes Leite, 36<br>Centro, Conceição do Coité, BA</p>
+      </div>
+
+      <div>
+        <strong>Contato</strong>
+        <!-- O link do WhatsApp segue o formato https://wa.me/55 + DDD + número,
+             tudo junto, sem espaço, parênteses ou traço.
+             Exemplo: (75) 99999-9999  vira  https://wa.me/5575999999999
+             TROQUE o número abaixo pelo real (no href e no texto). -->
+        <p>
+          <a href="https://wa.me/5575999999999" target="_blank" rel="noopener">WhatsApp: (75) 99999-9999</a><br>
+          <a href="https://www.instagram.com/jlbarbershopp" target="_blank" rel="noopener">Instagram: @jlbarbershopp</a>
+        </p>
+      </div>
+
+      <!-- Linha de baixo. O ano é escrito na mão; lembre de atualizar. -->
+      <p class="rodape__direitos">
+        © 2026 JL Barbearia. Todos os direitos reservados.<br>
+        Desenvolvido por <a href="https://www.linkedin.com/in/arthuoliveira07" target="_blank" rel="noopener">Arthur Oliveira</a>
+      </p>
+
+    </div>
+  </footer>
+
+  <!-- Biblioteca oficial do Supabase (fala com o banco de dados) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Dados compartilhados com a página do barbeiro (horários, feriados) -->
+  <script src="dados-horarios.js"></script>
+
+  <!-- ============================================================
+       SCRIPT DO MENU DE AGENDAMENTO
+       Controla: abrir/fechar o menu, o seletor de barbeiro, o scroll
+       de meses, o calendário (com feriados, dias passados e a
+       OCUPAÇÃO REAL vinda do Supabase) e a lista de horários por
+       dia, já marcando quais estão ocupados. O botão "Agendar" grava
+       o agendamento de verdade no banco.
+       ============================================================ -->
+  <script>
+
+  // ============================================================
+  // Checagem de arquivos: se a biblioteca do Supabase ou o
+  // dados-horarios.js não carregaram (arquivo faltando na pasta,
+  // sem internet, link errado), avisa dentro do calendário em vez
+  // de deixar a área de dias simplesmente vazia sem explicação.
+  // ============================================================
+  if(typeof window.supabase === 'undefined' || typeof supabaseClient === 'undefined'){
+    document.addEventListener('DOMContentLoaded', function(){
+      var avisoEl = document.getElementById('horariosAviso');
+      var diasContainer = document.getElementById('dias');
+      if(diasContainer) diasContainer.innerHTML = '';
+      if(avisoEl){
+        avisoEl.style.display = 'block';
+        avisoEl.textContent = 'Não consegui carregar o calendário agora (falta o dados-horarios.js ou a internet caiu). Recarregue a página.';
+      }
+    });
+  }
+
+  // ---------- Abrir/fechar o menu suspenso ----------
+  var sheet   = document.getElementById('sheet');
+  var overlay = document.getElementById('overlay');
+
+  // Qualquer botão com essa classe abre o menu (topo, hero, "onde estamos")
+  document.querySelectorAll('.js-abrir-agendamento').forEach(function(btn){
+    btn.onclick = function(){
+      sheet.classList.add('aberto');
+      overlay.classList.add('aberto');
+    };
+  });
+  overlay.onclick = function(){
+    sheet.classList.remove('aberto');
+    overlay.classList.remove('aberto');
+  };
+
+  // ---------- Seletor de barbeiro (dropdown customizado) ----------
+  var seletorValor  = document.getElementById('barbeiroValor');
+  var seletorLista  = document.getElementById('barbeiroLista');
+  var barbeiroTexto = document.getElementById('barbeiroTexto');
+
+  seletorValor.onclick = function(){
+    seletorLista.classList.toggle('aberto');
+    seletorValor.classList.toggle('aberto');
+  };
+
+  seletorLista.querySelectorAll('.seletor__opcao').forEach(function(opcao){
+    opcao.onclick = function(){
+      seletorLista.querySelectorAll('.seletor__opcao').forEach(function(o){ o.classList.remove('ativo'); });
+      opcao.classList.add('ativo');
+      barbeiroTexto.textContent = opcao.dataset.nome;
+      seletorLista.classList.remove('aberto');
+      seletorValor.classList.remove('aberto');
+      montarCalendario(); // a ocupação dos dias muda de barbeiro pra barbeiro
+    };
+  });
+
+  // Fecha o dropdown se a pessoa tocar fora dele
+  document.addEventListener('click', function(e){
+    if(!document.getElementById('seletorBarbeiro').contains(e.target)){
+      seletorLista.classList.remove('aberto');
+      seletorValor.classList.remove('aberto');
+    }
+  });
+
+  // ---------- Meses: só a partir do mês atual até dezembro ----------
+  // (meses que já passaram nem aparecem — evita a pessoa cair num mês
+  // inteiro no passado e achar que "não tem dia nenhum disponível")
+  var hoje = new Date();
+  hoje.setHours(0,0,0,0);
+  var ANO = hoje.getFullYear();
+  var mesSelecionado = hoje.getMonth(); // começa no mês atual
+  var NOMES_MESES = NOMES_MESES_TODOS.slice(mesSelecionado); // corta os meses já passados
+
+  var mesesEl = document.getElementById('meses');
+  NOMES_MESES.forEach(function(nome, posicao){
+    var indice = mesSelecionado + posicao; // índice real do mês (0=jan...11=dez)
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pilula' + (posicao === 0 ? ' ativo' : '');
+    b.textContent = nome;
+    b.onclick = function(){
+      mesesEl.querySelectorAll('.pilula').forEach(function(el){ el.classList.remove('ativo'); });
+      b.classList.add('ativo');
+      mesSelecionado = indice;
+      montarCalendario();
+    };
+    mesesEl.appendChild(b);
+  });
+
+  // Rolagem horizontal no computador: sem essa parte, quem usa mouse
+  // (roda vertical) não conseguia mexer nas fileiras de mês e horário,
+  // porque escondemos a barra de rolagem e só sobra o toque/arraste,
+  // que não existe em mouse. Isso converte a rolagem vertical do
+  // mouse em rolagem horizontal dentro dessas fileiras.
+  document.querySelectorAll('.fileira-scroll').forEach(function(fileira){
+    fileira.addEventListener('wheel', function(e){
+      if(e.deltaY === 0) return; // já é rolagem horizontal (trackpad), deixa como está
+      e.preventDefault();
+      fileira.scrollLeft += e.deltaY;
+    }, { passive: false });
+  });
+
+  // ---------- Dias da semana (cabeçalho fixo em cima da grade) ----------
+  var semanaEl = document.getElementById('semana');
+  NOMES_SEMANA.forEach(function(nome){
+    var span = document.createElement('span');
+    span.textContent = nome;
+    semanaEl.appendChild(span);
+  });
+
+  // ============================================================
+  // Ocupação do dia (bolinha verde → vermelha conforme enche)
+  // ============================================================
+  // Agora vem de verdade do banco: pra cada mês/barbeiro escolhido,
+  // buscamos todos os agendamentos já feitos e contamos quantos
+  // caem em cada dia. Isso substitui os dados de exemplo de antes.
+  // Busca no Supabase os agendamentos do mês/barbeiro atual.
+  // Retorna uma lista de linhas {data, horario}. Se der erro de
+  // conexão, avisa no console e devolve uma lista vazia (o site
+  // continua funcionando, só sem mostrar ocupação real por ora).
+  async function buscarAgendamentosDoMes(barbeiro){
+    var inicio = paraISO(new Date(ANO, mesSelecionado, 1));
+    var fim = paraISO(new Date(ANO, mesSelecionado + 1, 0));
+
+    var resultado = await supabaseClient
+      .from('agendamentos')
+      .select('data, horario')
+      .eq('barbeiro', barbeiro)
+      .gte('data', inicio)
+      .lte('data', fim);
+
+    if(resultado.error){
+      console.error('Erro ao buscar agendamentos:', resultado.error);
+      return [];
+    }
+    return resultado.data;
+  }
+
+  // Escolhe uma cor entre verde (dia vazio) e vermelho (dia lotado),
+  // passando por amarelo/laranja no meio do caminho.
+  function corDeOcupacao(percentual){
+    var matiz = Math.round(130 - (130 * percentual)); // 130=verde, 0=vermelho
+    return 'hsl(' + matiz + ', 65%, 45%)';
+  }
+
+  // ---------- Calendário ----------
+  // Monta os dias do mês escolhido, alinhados com o dia da semana
+  // certo, desabilita domingo/feriado/dias passados, e pinta cada
+  // bolinha conforme a ocupação REAL daquele dia com o barbeiro
+  // escolhido (busca no Supabase antes de desenhar).
+  var diasEl = document.getElementById('dias');
+  var diaSelecionadoEl = null;
+  var agendamentosDoMesAtual = [];  // guardado pra reusar na lista de horários
+  var dataSelecionadaISO = null;
+  var horarioSelecionado = null;
+
+  async function montarCalendario(){
+    diasEl.innerHTML = '';
+    esconderHorarios();
+    dataSelecionadaISO = null;
+    horarioSelecionado = null;
+
+    try {
+      var totalDias = new Date(ANO, mesSelecionado + 1, 0).getDate();
+      var primeiroDiaSemana = new Date(ANO, mesSelecionado, 1).getDay(); // 0=Dom...6=Sáb
+      // Reorganiza pra a semana começar na Segunda (Seg=0 ... Dom=6)
+      var espacosVazios = (primeiroDiaSemana + 6) % 7;
+      var barbeiroAtual = barbeiroTexto.textContent;
+
+      agendamentosDoMesAtual = await buscarAgendamentosDoMes(barbeiroAtual);
+    } catch(erro) {
+      // Se algo der errado aqui (arquivo que não carregou, conexão
+      // caiu), mostra um aviso em vez de deixar a área vazia sem
+      // explicação nenhuma.
+      console.error('Erro ao montar o calendário:', erro);
+      horariosAvisoEl.style.display = 'block';
+      horariosAvisoEl.textContent = 'Não consegui carregar o calendário agora. Recarregue a página.';
+      return;
+    }
+
+    // Conta quantos agendamentos caem em cada dia (data no formato ISO)
+    var contagemPorDia = {};
+    agendamentosDoMesAtual.forEach(function(linha){
+      contagemPorDia[linha.data] = (contagemPorDia[linha.data] || 0) + 1;
+    });
+
+    for(var i = 0; i < espacosVazios; i++){
+      var vazio = document.createElement('div');
+      vazio.className = 'dia-vazio';
+      diasEl.appendChild(vazio);
+    }
+
+    for(var dia = 1; dia <= totalDias; dia++){
+      var data = new Date(ANO, mesSelecionado, dia);
+      var dataISOStr = paraISO(data);
+      var diaSemana = data.getDay();
+      var nomeFeriado = feriadoDoDia(data);
+      var ehDomingo = (diaSemana === 0);
+      var ehFeriado = (nomeFeriado !== null);
+      var ehPassado = (data < hoje);
+
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dia';
+
+      // O número do dia fica num <span> à parte, pra poder desenhar o
+      // "líquido" atrás dele sem escrever um por cima do outro.
+      var numero = document.createElement('span');
+      numero.className = 'dia__numero';
+      numero.textContent = dia;
+      b.appendChild(numero);
+
+      if(ehFeriado) b.title = nomeFeriado; // aparece ao segurar o dedo/passar o mouse
+
+      if(ehDomingo || ehFeriado || ehPassado){
+        b.disabled = true;
+      } else {
+        var totalHorarios = horariosDoDia(diaSemana).length;
+        var ocupados = contagemPorDia[dataISOStr] || 0;
+        var percentual = ocupados / totalHorarios;
+
+        // O "líquido" que sobe dentro do círculo conforme o dia enche,
+        // mudando de verde pra vermelho.
+        var liquido = document.createElement('span');
+        liquido.className = 'dia__liquido';
+        liquido.style.height = (percentual * 100) + '%';
+        liquido.style.background = corDeOcupacao(percentual);
+        b.insertBefore(liquido, numero); // o líquido fica atrás do número
+
+        b.title = ocupados + ' de ' + totalHorarios + ' horários ocupados';
+
+        if(ocupados >= totalHorarios){
+          // Dia 100% cheio: continua mostrando vermelho, mas não dá
+          // mais pra escolher, porque não sobrou horário nenhum.
+          b.disabled = true;
+          b.title = 'Sem horários disponíveis nesse dia';
+        } else {
+          (function(botao, diaDaSemana, diaISO){
+            botao.onclick = function(){
+              if(diaSelecionadoEl) diaSelecionadoEl.classList.remove('ativo');
+              botao.classList.add('ativo');
+              diaSelecionadoEl = botao;
+              dataSelecionadaISO = diaISO;
+              mostrarHorarios(diaDaSemana, diaISO);
+            };
+          })(b, diaSemana, dataISOStr);
+        }
+      }
+
+      diasEl.appendChild(b);
+    }
+  }
+
+  // ---------- Horários ----------
+  // Aparecem só depois que a pessoa escolhe um dia, já filtrados
+  // pelo expediente daquele dia da semana E marcando como
+  // indisponível qualquer horário que já tenha sido agendado
+  // de verdade (vindo de agendamentosDoMesAtual).
+  var horariosEl = document.getElementById('horarios');
+  var horariosAvisoEl = document.getElementById('horariosAviso');
+
+  function esconderHorarios(){
+    horariosEl.style.display = 'none';
+    horariosEl.innerHTML = '';
+    horariosAvisoEl.style.display = 'block';
+    horariosAvisoEl.textContent = 'Escolha um dia para ver os horários.';
+  }
+
+  function mostrarHorarios(diaSemana, diaISO){
+    horarioSelecionado = null;
+    var lista = horariosDoDia(diaSemana);
+    horariosEl.innerHTML = '';
+
+    if(lista.length === 0){
+      horariosAvisoEl.textContent = 'Sem horários disponíveis nesse dia.';
+      horariosAvisoEl.style.display = 'block';
+      horariosEl.style.display = 'none';
+      return;
+    }
+
+    // Horários desse dia específico que já foram agendados
+    var ocupadosNesseDia = agendamentosDoMesAtual
+      .filter(function(linha){ return linha.data === diaISO; })
+      .map(function(linha){ return linha.horario; });
+
+    horariosAvisoEl.style.display = 'none';
+    horariosEl.style.display = 'flex';
+
+    lista.forEach(function(hora){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pilula';
+      b.textContent = hora;
+
+      if(ocupadosNesseDia.indexOf(hora) !== -1){
+        b.disabled = true;
+        b.title = 'Esse horário já foi agendado';
+      } else {
+        b.onclick = function(){
+          horariosEl.querySelectorAll('.pilula').forEach(function(el){ el.classList.remove('ativo'); });
+          b.classList.add('ativo');
+          horarioSelecionado = hora;
+        };
+      }
+      horariosEl.appendChild(b);
+    });
+  }
+
+  // ---------- Botão "Agendar" (grava de verdade no banco) ----------
+  var btnAgendar = document.getElementById('btnAgendar');
+  var clienteNomeInput = document.getElementById('clienteNome');
+  var clienteWhatsappInput = document.getElementById('clienteWhatsapp');
+
+  // Lembrar nome/WhatsApp: guardamos no localStorage (uma memória
+  // que fica salva só no aparelho da própria pessoa, sem precisar de
+  // conta nem login). Assim, da próxima vez que ela voltar nesse
+  // mesmo navegador, os campos já vêm preenchidos sozinhos.
+  try {
+    var nomeSalvo = localStorage.getItem('jlbarbearia_nome');
+    var whatsappSalvo = localStorage.getItem('jlbarbearia_whatsapp');
+    if(nomeSalvo) clienteNomeInput.value = nomeSalvo;
+    if(whatsappSalvo) clienteWhatsappInput.value = whatsappSalvo;
+  } catch(erro) {
+    // Alguns navegadores bloqueiam localStorage (ex: modo anônimo
+    // bem restrito). Sem problema, o site continua funcionando,
+    // só não vai lembrar o nome da próxima vez.
+  }
+
+  btnAgendar.onclick = async function(){
+    if(!dataSelecionadaISO){ alert('Escolha um dia.'); return; }
+    if(!horarioSelecionado){ alert('Escolha um horário.'); return; }
+
+    var nome = clienteNomeInput.value.trim();
+    var whatsapp = clienteWhatsappInput.value.trim();
+    if(!nome){ alert('Digite seu nome.'); clienteNomeInput.focus(); return; }
+    if(!whatsapp){ alert('Digite seu WhatsApp.'); clienteWhatsappInput.focus(); return; }
+
+    btnAgendar.disabled = true;
+    btnAgendar.textContent = 'Agendando...';
+
+    var resultado = await supabaseClient.from('agendamentos').insert({
+      barbeiro: barbeiroTexto.textContent,
+      data: dataSelecionadaISO,
+      horario: horarioSelecionado,
+      cliente_nome: nome,
+      cliente_whatsapp: whatsapp
+    });
+
+    btnAgendar.disabled = false;
+    btnAgendar.textContent = 'Agendar';
+
+    if(resultado.error){
+      // Código 23505 = a trava "unique" do banco travou porque
+      // alguém acabou de pegar esse mesmo horário primeiro.
+      if(resultado.error.code === '23505'){
+        alert('Esse horário acabou de ser reservado por outra pessoa. Escolha outro.');
+      } else {
+        alert('Não foi possível agendar agora. Tenta de novo em instantes.');
+        console.error('Erro ao agendar:', resultado.error);
+      }
+      montarCalendario(); // atualiza a ocupação na tela
+      return;
+    }
+
+    // Deu certo: guarda nome e WhatsApp pra não pedir de novo da
+    // próxima vez (mas SÓ depois de confirmar que o agendamento
+    // foi salvo, pra não guardar um dado que nem virou reserva).
+    try {
+      localStorage.setItem('jlbarbearia_nome', nome);
+      localStorage.setItem('jlbarbearia_whatsapp', whatsapp);
+    } catch(erro) {
+      // Sem problema se não der — só não vai lembrar da próxima vez.
+    }
+
+    alert('Agendamento confirmado! Até lá, ' + nome + '.');
+    sheet.classList.remove('aberto');
+    overlay.classList.remove('aberto');
+    montarCalendario();
+  };
+
+  // Monta o calendário do mês atual assim que a página carrega
+  montarCalendario();
+  </script>
+
+</body>
+</html>

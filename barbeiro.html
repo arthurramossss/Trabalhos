@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Área do Barbeiro | JL Barbearia</title>
+  <!-- Não colocamos esse título/página em nenhum link do site — só
+       quem sabe o endereço "barbeiro.html" chega aqui. -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  
+
+  <!-- ============================================================
+       TELA DA AGENDA
+       Só aparece depois do login. Reaproveita as mesmas classes de
+       mês/dia/semana usadas no index.html (fileira-scroll, pilula,
+       semana, grade-dias, dia) pra ficar com a cara do resto do site.
+       ============================================================ -->
+  <div id="telaAgenda" style="display:none;">
+    <div class="container">
+
+      <div class="topo-barbeiro">
+        <div>
+          <p>Olá,</p>
+          <strong id="nomeBarbeiroLogado">—</strong>
+        </div>
+        <button type="button" class="botao botao--contorno" id="btnSair">Sair</button>
+   </div>
+
+      <!-- Só aparece pro admin (dev): escolher de qual barbeiro ver
+           a agenda. Um barbeiro comum nem vê esse campo. -->
+      <div class="campo" id="campoTrocarBarbeiro" style="display:none;">
+        <label for="seletorAdminBarbeiro">Ver agenda de</label>
+        <select id="seletorAdminBarbeiro">
+          <option value="Jardel Lima">Jardel Lima</option>
+          <option value="Xande Elexias">Xande Elexias</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Mês</label>
+        <div class="fileira-scroll" id="meses"></div>
+      </div>
+
+      <div class="campo">
+        <label>Dia</label>
+        <div class="semana" id="semana"></div>
+        <div class="grade-dias" id="dias"></div>
+      </div>
+
+      <div class="campo">
+        <label id="rotuloHorarios">Horários</label>
+        <p class="horarios__aviso" id="horariosAviso">Escolha um dia pra ver os horários.</p>
+        <ul class="agenda-lista" id="agendaLista" style="display:none;"></ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Biblioteca oficial do Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Dados compartilhados com o index.html (horários, feriados) -->
+  <script src="dados-horarios.js"></script>
+
+  <script>
+  // ============================================================
+  // Elementos da tela
+  // ============================================================
+  var telaLogin  = document.getElementById('telaLogin');
+  var telaAgenda = document.getElementById('telaAgenda');
+  var loginErro  = document.getElementById('loginErro');
+
+  var loginEmailInput = document.getElementById('loginEmail');
+  var loginSenhaInput = document.getElementById('loginSenha');
+  var btnEntrar = document.getElementById('btnEntrar');
+  var btnSair   = document.getElementById('btnSair');
+
+  var nomeBarbeiroLogado = document.getElementById('nomeBarbeiroLogado');
+  var barbeiroAtual = null; // preenchido depois do login, ex: "Jardel Lima"
+  var seletorAdminBarbeiro = document.getElementById('seletorAdminBarbeiro');
+  var campoTrocarBarbeiro = document.getElementById('campoTrocarBarbeiro');
+
+  function mostrarErroLogin(mensagem){
+    loginErro.textContent = mensagem;
+    loginErro.style.display = 'block';
+  }
+
+  // ============================================================
+  // Descobre qual barbeiro é essa conta (tabela "perfis"), e se é
+  // uma conta admin (dev) — que enxerga a agenda de qualquer um.
+  // ============================================================
+  async function carregarPerfilDoBarbeiro(){
+    var sessao = await supabaseClient.auth.getSession();
+    var usuario = sessao.data.session ? sessao.data.session.user : null;
+    if(!usuario) return null;
+
+    var resultado = await supabaseClient
+      .from('perfis')
+      .select('nome_barbeiro, eh_admin')
+      .eq('id', usuario.id)
+      .single();
+
+    if(resultado.error || !resultado.data){
+      return null; // conta existe, mas ninguém ligou ela a um perfil ainda
+    }
+    // Uma conta é válida se tem um nome de barbeiro OU se é admin
+    // (admin pode não ter nome_barbeiro nenhum vinculado).
+    if(!resultado.data.nome_barbeiro && !resultado.data.eh_admin){
+      return null;
+    }
+    return resultado.data; // { nome_barbeiro, eh_admin }
+  }
+
+  async function entrarNaAgenda(perfil){
+    if(perfil.eh_admin){
+      // Admin: mostra o seletor e começa vendo a agenda do primeiro
+      // barbeiro da lista (dá pra trocar depois).
+      campoTrocarBarbeiro.style.display = 'block';
+      barbeiroAtual = perfil.nome_barbeiro || seletorAdminBarbeiro.value;
+      seletorAdminBarbeiro.value = barbeiroAtual;
+      nomeBarbeiroLogado.textContent = barbeiroAtual + ' (admin)';
+    } else {
+      campoTrocarBarbeiro.style.display = 'none';
+      barbeiroAtual = perfil.nome_barbeiro;
+      nomeBarbeiroLogado.textContent = barbeiroAtual;
+    }
+
+    telaLogin.style.display = 'none';
+    telaAgenda.style.display = 'block';
+    montarMeses();
+    montarSemana();
+    await montarCalendario();
+  }
+
+  // Quando o admin troca de barbeiro no seletor, recarrega a agenda
+  seletorAdminBarbeiro.onchange = async function(){
+    barbeiroAtual = seletorAdminBarbeiro.value;
+    nomeBarbeiroLogado.textContent = barbeiroAtual + ' (admin)';
+    await montarCalendario();
+  };
+
+  // ---------- Botão Entrar ----------
+  btnEntrar.onclick = async function(){
+    loginErro.style.display = 'none';
+    var email = loginEmailInput.value.trim();
+    var senha = loginSenhaInput.value;
+    if(!email || !senha){ mostrarErroLogin('Digite o e-mail e a senha.'); return; }
+
+    btnEntrar.disabled = true;
+    btnEntrar.textContent = 'Entrando...';
+
+    var resultado = await supabaseClient.auth.signInWithPassword({ email: email, password: senha });
+
+    btnEntrar.disabled = false;
+    btnEntrar.textContent = 'Entrar';
+
+    if(resultado.error){
+      mostrarErroLogin('E-mail ou senha incorretos.');
+      return;
+    }
+
+    var perfil = await carregarPerfilDoBarbeiro();
+    if(!perfil){
+      mostrarErroLogin('Essa conta ainda não está vinculada a nenhum barbeiro. Fale com quem cuida do site.');
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    entrarNaAgenda(perfil);
+  };
+
+  // ---------- Botão Sair ----------
+  btnSair.onclick = async function(){
+    await supabaseClient.auth.signOut();
+    barbeiroAtual = null;
+    telaAgenda.style.display = 'none';
+    telaLogin.style.display = 'flex';
+    loginEmailInput.value = '';
+    loginSenhaInput.value = '';
+  };
+
+  // ---------- Se já tinha uma sessão aberta antes (não força login de novo) ----------
+  (async function(){
+    var perfil = await carregarPerfilDoBarbeiro();
+    if(perfil) entrarNaAgenda(perfil);
+  })();
+
+  // ============================================================
+  // Meses e dias da semana (mesmo padrão visual do index.html)
+  // ============================================================
+  var hoje = new Date();
+  hoje.setHours(0,0,0,0);
+  var ANO = hoje.getFullYear();
+  var mesSelecionado = hoje.getMonth();
+
+  var mesesEl = document.getElementById('meses');
+  function montarMeses(){
+    mesesEl.innerHTML = '';
+    var nomesRestantes = NOMES_MESES_TODOS.slice(mesSelecionado);
+    nomesRestantes.forEach(function(nomeMes, posicao){
+      var indice = mesSelecionado + posicao;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pilula' + (posicao === 0 ? ' ativo' : '');
+      b.textContent = nomeMes;
+      b.onclick = function(){
+        mesesEl.querySelectorAll('.pilula').forEach(function(el){ el.classList.remove('ativo'); });
+        b.classList.add('ativo');
+        mesSelecionado = indice;
+        montarCalendario();
+      };
+      mesesEl.appendChild(b);9
+    });
+  }
+
+  var semanaEl = document.getElementById('semana');
+  function montarSemana(){
+    semanaEl.innerHTML = '';
+    NOMES_SEMANA.forEach(function(nome){
+      var span = document.createElement('span');
+      span.textContent = nome;
+      semanaEl.appendChild(span);
+    });
+  }
+
+  // Rolagem horizontal no computador (mouse não arrasta como o dedo)
+  document.querySelectorAll('.fileira-scroll').forEach(function(fileira){
+    fileira.addEventListener('wheel', function(e){
+      if(e.deltaY === 0) return;
+      e.preventDefault();
+      fileira.scrollLeft += e.deltaY;
+    }, { passive: false });
+  });
+
+  // ============================================================
+  // Calendário: aqui não pintamos "ocupação" com líquido — cada dia
+  // só fica desabilitado se for domingo, feriado ou já tiver
+  // passado. O detalhe (livre/ocupado/bloqueado) só aparece depois
+  // de escolher o dia, na lista de horários.
+  // ============================================================
+  var diasEl = document.getElementById('dias');
+  var diaSelecionadoEl = null;
+  var agendamentosDoDiaAtual = [];
+
+  async function montarCalendario(){
+    diasEl.innerHTML = '';
+    esconderHorarios();
+
+    var totalDias = new Date(ANO, mesSelecionado + 1, 0).getDate();
+    var primeiroDiaSemana = new Date(ANO, mesSelecionado, 1).getDay();
+    var espacosVazios = (primeiroDiaSemana + 6) % 7;
+
+    for(var i = 0; i < espacosVazios; i++){
+      var vazio = document.createElement('div');
+      vazio.className = 'dia-vazio';
+      diasEl.appendChild(vazio);
+    }
+
+    for(var dia = 1; dia <= totalDias; dia++){
+      var data = new Date(ANO, mesSelecionado, dia);
+      var dataISOStr = paraISO(data);
+      var diaSemana = data.getDay();
+      var nomeFeriado = feriadoDoDia(data);
+      var ehDomingo = (diaSemana === 0);
+      var ehFeriado = (nomeFeriado !== null);
+      var ehPassado = (data < hoje);
+
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dia';
+      var numero = document.createElement('span');
+      numero.className = 'dia__numero';
+      numero.textContent = dia;
+      b.appendChild(numero);
+
+      if(ehFeriado) b.title = nomeFeriado;
+
+      if(ehDomingo || ehFeriado || ehPassado){
+        b.disabled = true;
+      } else {
+        (function(botao, diaDaSemana, diaISO){
+          botao.onclick = function(){
+            if(diaSelecionadoEl) diaSelecionadoEl.classList.remove('ativo');
+            botao.classList.add('ativo');
+            diaSelecionadoEl = botao;
+            mostrarHorariosDoDia(diaDaSemana, diaISO);
+          };
+        })(b, diaSemana, dataISOStr);
+      }
+
+      diasEl.appendChild(b);
+    }
+  }
+
+  // ============================================================
+  // Lista de horários do dia escolhido: busca no banco os horários
+  // que já têm agendamento (do cliente OU bloqueado pelo barbeiro)
+  // e monta a lista completa (livres + ocupados + bloqueados).
+  // ============================================================
+  var horariosAvisoEl = document.getElementById('horariosAviso');
+  var agendaListaEl = document.getElementById('agendaLista');
+  var rotuloHorariosEl = document.getElementById('rotuloHorarios');
+
+  function esconderHorarios(){
+    agendaListaEl.style.display = 'none';
+    agendaListaEl.innerHTML = '';
+    horariosAvisoEl.style.display = 'block';
+    horariosAvisoEl.textContent = 'Escolha um dia pra ver os horários.';
+    rotuloHorariosEl.textContent = 'Horários';
+  }
+
+  async function mostrarHorariosDoDia(diaSemana, diaISO){
+    var lista = horariosDoDia(diaSemana);
+    agendaListaEl.innerHTML = '';
+
+    if(lista.length === 0){
+      horariosAvisoEl.textContent = 'Sem horário de funcionamento nesse dia.';
+      horariosAvisoEl.style.display = 'block';
+      agendaListaEl.style.display = 'none';
+      return;
+    }
+
+    var dataFormatada = diaISO.split('-').reverse().join('/');
+    rotuloHorariosEl.textContent = 'Horários de ' + dataFormatada;
+    horariosAvisoEl.style.display = 'none';
+    agendaListaEl.style.display = 'block';
+
+    var resultado = await supabaseClient
+      .from('agendamentos')
+      .select('id, horario, bloqueado, cliente_nome, cliente_whatsapp')
+      .eq('barbeiro', barbeiroAtual)
+      .eq('data', diaISO);
+
+    agendamentosDoDiaAtual = resultado.error ? [] : resultado.data;
+
+    lista.forEach(function(hora){
+      var linha = agendamentosDoDiaAtual.find(function(l){ return l.horario === hora; });
+      agendaListaEl.appendChild(criarLinhaHorario(hora, diaISO, linha));
+    });
+  }
+
+  function criarLinhaHorario(hora, diaISO, linha){
+    var li = document.createElement('li');
+    li.className = 'agenda-horario';
+
+    var horaEl = document.createElement('span');
+    horaEl.className = 'agenda-horario__hora';
+    horaEl.textContent = hora;
+    li.appendChild(horaEl);
+
+    var info = document.createElement('div');
+    info.className = 'agenda-horario__info';
+
+    var acoes = document.createElement('div');
+    acoes.className = 'agenda-horario__acoes';
+
+    if(!linha){
+      // ---- LIVRE ----
+      info.innerHTML = '<span class="agenda-horario__status"><span class="bolinha-status bolinha-status--livre"></span>Livre</span>';
+
+      var btnBloquear = document.createElement('button');
+      btnBloquear.type = 'button';
+      btnBloquear.className = 'botao botao--contorno';
+      btnBloquear.textContent = 'Bloquear';
+      btnBloquear.onclick = function(){ bloquearHorario(diaISO, hora); };
+      acoes.appendChild(btnBloquear);
+
+    } else if(linha.bloqueado){
+      // ---- BLOQUEADO PELO PRÓPRIO BARBEIRO ----
+      info.innerHTML = '<span class="agenda-horario__status"><span class="bolinha-status bolinha-status--bloqueado"></span>Bloqueado por você</span>';
+
+      var btnDesbloquear = document.createElement('button');
+      btnDesbloquear.type = 'button';
+      btnDesbloquear.className = 'botao botao--contorno';
+      btnDesbloquear.textContent = 'Desbloquear';
+      btnDesbloquear.onclick = function(){ removerAgendamento(linha.id, diaISO, hora, false); };
+      acoes.appendChild(btnDesbloquear);
+
+    } else {
+      // ---- OCUPADO POR UM CLIENTE ----
+      info.innerHTML =
+        '<span class="agenda-horario__status"><span class="bolinha-status bolinha-status--ocupado"></span>Agendado</span>' +
+        '<span class="agenda-horario__cliente">' + linha.cliente_nome + '</span>';
+
+      var numeroLimpo = linha.cliente_whatsapp.replace(/\D/g, ''); // tira parênteses/traço/espaço
+      var linkZap = document.createElement('a');
+      linkZap.className = 'botao';
+      linkZap.href = 'https://wa.me/55' + numeroLimpo;
+      linkZap.target = '_blank';
+      linkZap.rel = 'noopener';
+      linkZap.textContent = 'WhatsApp';
+      acoes.appendChild(linkZap);
+
+      var btnDesmarcar = document.createElement('button');
+      btnDesmarcar.type = 'button';
+      btnDesmarcar.className = 'botao botao--perigo';
+      btnDesmarcar.textContent = 'Desmarcar';
+      btnDesmarcar.onclick = function(){ removerAgendamento(linha.id, diaISO, hora, true); };
+      acoes.appendChild(btnDesmarcar);
+    }
+
+    li.appendChild(info);
+    li.appendChild(acoes);
+    return li;
+  }
+
+  // ---------- Bloquear um horário livre ----------
+  async function bloquearHorario(diaISO, hora){
+    var resultado = await supabaseClient.from('agendamentos').insert({
+      barbeiro: barbeiroAtual,
+      data: diaISO,
+      horario: hora,
+      cliente_nome: 'Bloqueado pelo barbeiro',
+      cliente_whatsapp: '-',
+      bloqueado: true
+    });
+
+    if(resultado.error){
+      alert('Não foi possível bloquear esse horário. Tenta de novo.');
+      console.error(resultado.error);
+      return;
+    }
+
+    var diaSemana = new Date(diaISO + 'T00:00:00').getDay();
+    mostrarHorariosDoDia(diaSemana, diaISO);
+  }
+
+  // ---------- Desmarcar (cliente) ou desbloquear (próprio barbeiro) ----------
+  async function removerAgendamento(id, diaISO, hora, ehCancelamentoDeCliente){
+    if(ehCancelamentoDeCliente){
+      var confirmar = confirm('Desmarcar esse horário? O cliente não é avisado automaticamente — avise pelo WhatsApp se precisar.');
+      if(!confirmar) return;
+    }
+
+    var resultado = await supabaseClient.from('agendamentos').delete().eq('id', id);
+
+    if(resultado.error){
+      alert('Não foi possível fazer isso agora. Tenta de novo.');
+      console.error(resultado.error);
+      return;
+    }
+
+    var diaSemana = new Date(diaISO + 'T00:00:00').getDay();
+    mostrarHorariosDoDia(diaSemana, diaISO);
+  }
+  </script>
+</body>
+</html>

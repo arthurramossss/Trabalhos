@@ -1,0 +1,778 @@
+/* ==================================================================
+   STYLE.CSS  |  JL Barbearia
+   Este arquivo define a APARÊNCIA do site (cores, tamanhos, espaços).
+   O index.html define o CONTEÚDO (textos, botões, imagens).
+
+   Como ler o CSS:
+     .nome-da-classe { propriedade: valor; }
+   A classe ".botao" aqui casa com class="botao" no HTML.
+
+   ÍNDICE
+   1. Variáveis (cores e medidas)
+   2. Base (reset e textos)
+   3. Componentes reutilizáveis (container, botão, seções)
+   4. Menu do topo
+   5. Hero (foto com degradê)
+   6. Serviços e preços
+   7. Equipe
+   8. Avaliações
+   9. Onde estamos e rodapé
+   10. Celular (responsivo)
+   11. Menu de agendamento (bottom sheet)
+   12. Página do barbeiro (login e agenda)
+   ================================================================== */
+
+
+/* ------------------------------------------------------------------
+   1. VARIÁVEIS
+   Guardam cores e medidas num lugar só. Para mudar o tom do site
+   inteiro, altere aqui. Uso: color: var(--azul);
+   As cores abaixo seguem o cinza claro + escuro do logo e um azul
+   médio. Se tiver o logo, pegue o hex exato com um conta-gotas.
+   ------------------------------------------------------------------ */
+:root {
+  --escuro:      #1d2329;   /* fundo das partes escuras */
+  --escuro-2:    #272f36;   /* cartões sobre o fundo escuro */
+  --cinza:       #e4e7ea;   /* fundo das partes claras */
+  --cinza-2:     #d0d5da;   /* bordas nas partes claras */
+  --azul:        #2f6da8;   /* azul médio: botões */
+  --azul-hover:  #3a7bba;   /* azul um pouco mais claro ao passar o mouse */
+  --azul-claro:  #8dbbe6;   /* azul para textos sobre fundo escuro */
+  --texto-claro: #eef0f2;   /* texto sobre fundo escuro */
+  --texto-suave: #a9b2ba;   /* texto secundário no escuro */
+  --escuro-3:    #323b43;   /* um pouco mais claro que --escuro-2, usado no menu de agendamento */
+  --texto-fraco: rgba(255,255,255,.28);  /* texto bem apagado (dias desabilitados do calendário) */
+  --linha:       rgba(255,255,255,.14);  /* linhas/bordas finas sobre fundo escuro */
+  --texto-escuro:#1d2329;   /* texto sobre fundo claro */
+  --texto-suave-escuro: #55606a; /* texto secundário no claro */
+
+  --raio: 12px;             /* arredondamento padrão dos cantos */
+  --largura: 1040px;        /* largura máxima do conteúdo */
+}
+
+
+/* ------------------------------------------------------------------
+   2. BASE
+   ------------------------------------------------------------------ */
+/* Faz width/height incluírem padding e borda (evita surpresas) */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Rolagem suave ao clicar nos links do menu */
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;                          /* tira a margem padrão do navegador */
+  font-family: 'Manrope', system-ui, sans-serif; /* se a fonte falhar, usa a do sistema */
+  font-size: 1rem;
+  line-height: 1.6;
+  background: var(--escuro);
+  color: var(--texto-claro);
+}
+
+h1, h2, h3 { margin: 0; line-height: 1.15; }
+h2 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 800; margin-bottom: 8px; }
+h3 { font-size: 1.2rem; font-weight: 800; }
+
+a { color: inherit; }
+
+/* Reseta o visual padrão que o navegador dá a QUALQUER <button>
+   (borda cinza, fundo cinza, fonte diferente, cursor de seta).
+   Sem isso, um <button> com uma classe nossa em cima ainda mostra
+   um resquício do estilo nativo por baixo — foi o que deixou o
+   botão "Agendar" com aparência estranha. */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Contorno visível ao navegar com o teclado (Tab) */
+:focus-visible { outline: 3px solid var(--azul-claro); outline-offset: 3px; }
+
+
+/* ------------------------------------------------------------------
+   3. COMPONENTES REUTILIZÁVEIS
+   ------------------------------------------------------------------ */
+/* Caixa que centraliza o conteúdo e limita a largura */
+.container {
+  max-width: var(--largura);
+  margin: 0 auto;      /* auto nas laterais = centralizado */
+  padding: 0 20px;
+}
+
+/* Botão padrão (azul, cantos arredondados) */
+.botao {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--azul);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--raio);
+  transition: background .2s;
+}
+.botao:hover { background: var(--azul-hover); }
+
+/* Variação: botão só com contorno (usa junto: class="botao botao--contorno") */
+.botao--contorno {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.55);
+}
+.botao--contorno:hover { background: rgba(255,255,255,.12); }
+
+/* Seção genérica: espaçamento em cima e embaixo */
+.secao { padding: 72px 0; }
+
+/* Variações de cor de fundo */
+.secao--escura { background: var(--escuro); color: var(--texto-claro); }
+.secao--clara  { background: var(--cinza);  color: var(--texto-escuro); }
+
+/* Usada na 2ª seção clara seguida, para não ficar espaço duplo */
+.secao--sem-topo { padding-top: 0; }
+
+/* Frase de apoio embaixo do título de cada seção */
+.secao__intro { margin: 0 0 32px; max-width: 52ch; color: var(--texto-suave); }
+.secao--clara .secao__intro { color: var(--texto-suave-escuro); }
+
+
+/* ------------------------------------------------------------------
+   4. MENU DO TOPO
+   position: sticky = fica grudado no topo enquanto rola a página
+   ------------------------------------------------------------------ */
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 10;                        /* garante que fica por cima do resto */
+  background: rgba(29, 35, 41, .95);  /* escuro levemente transparente */
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* flex = coloca os itens lado a lado; space-between = espalha nas pontas */
+.topo__conteudo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.topo__logo { font-weight: 800; font-size: 1.2rem; text-decoration: none; }
+
+.topo__menu { display: flex; gap: 24px; font-size: .95rem; }
+.topo__menu a { text-decoration: none; color: var(--texto-suave); }
+.topo__menu a:hover { color: var(--texto-claro); }
+
+
+/* ------------------------------------------------------------------
+   5. HERO: FOTO DA BARBEARIA COM FADE PARA ESCURO
+   O background empilha DUAS camadas (a primeira fica por cima):
+     1ª) um degradê que vai de transparente (topo) até o escuro do
+         site (embaixo). É ele que cria o "fade escurecendo pra baixo".
+     2ª) a foto da barbearia.
+   O degradê termina na MESMA cor da próxima seção (--escuro), então
+   a foto "derrete" na página sem linha de corte.
+
+   FOTO: usa o arquivo fundo-barbearia.jpeg, salvo na mesma pasta do
+   index.html e do style.css. Pra trocar por outra foto no futuro, é
+   só substituir esse arquivo (mantendo o mesmo nome) ou mudar o
+   nome dentro do url('...') abaixo.
+   ------------------------------------------------------------------ */
+.hero {
+  min-height: 90vh;                   /* ocupa quase a tela toda */
+  display: flex;
+  align-items: flex-end;              /* texto fica na parte de baixo */
+  padding: 120px 0 56px;
+  background:
+    linear-gradient(to bottom,
+      rgba(29, 35, 41, .15) 0%,       /* topo: quase sem escurecer */
+      rgba(29, 35, 41, .55) 55%,      /* meio: escurece */
+      var(--escuro) 100%),            /* base: totalmente escuro */
+    url('https://github.com/arthurramossss/imagens/blob/main/fundo%20barbearia.jpeg')
+    center / cover no-repeat;         /* center/cover = a foto preenche tudo, centralizada */
+}
+
+.hero__conteudo { width: 100%; }
+.hero h1 { font-size: clamp(2.8rem, 9vw, 5.5rem); font-weight: 800; }
+.hero p  { max-width: 40ch; font-size: 1.15rem; color: var(--texto-claro); margin: 12px 0 26px; }
+.hero__botoes { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero__nota { margin: 22px 0 0; font-size: .95rem; color: var(--texto-suave); }
+
+
+/* ------------------------------------------------------------------
+   6. SERVIÇOS E PREÇOS
+   Estrutura em 2 níveis:
+     .servicos-barbeiro        → supertópico (bloco de um barbeiro)
+     .servicos-barbeiro__titulo → título grande "Serviços com Fulano"
+     .precos__coluna h4        → subtópico dentro do bloco (Cortes, Barba...)
+   grid = layout em colunas. "auto-fit / minmax" faz as colunas
+   virarem uma só sozinhas quando a tela é estreita.
+   ------------------------------------------------------------------ */
+
+/* Bloco de cada barbeiro. Um espaço maior separa um barbeiro do outro. */
+.servicos-barbeiro { margin-top: 44px; }
+.servicos-barbeiro:first-of-type { margin-top: 0; }
+
+/* Título do supertópico: maior e com uma linha azul embaixo,
+   pra marcar bem a troca de barbeiro. */
+.servicos-barbeiro__titulo {
+  font-size: 1.5rem;
+  color: var(--texto-claro);
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+  border-bottom: 2px solid var(--azul);
+}
+
+.precos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 8px 56px;
+}
+
+/* Subtópico (Cortes, Barba e acabamento, Combos, Química e cor) */
+.precos__coluna h4 {
+  font-size: 1.05rem;
+  color: var(--azul-claro);
+  padding-bottom: 8px;
+  margin: 24px 0 4px;
+  border-bottom: 1px solid rgba(255,255,255,.14);
+}
+/* Some com o espaço extra do primeiro subtópico de cada coluna */
+.precos__coluna h4:first-child { margin-top: 0; }
+
+.lista-precos { list-style: none; margin: 0; padding: 0; }
+
+/* Cada linha: nome à esquerda, preço à direita */
+.lista-precos li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.lista-precos small { display: block; font-size: .82rem; color: var(--texto-suave); }
+.lista-precos strong { white-space: nowrap; font-size: 1.05rem; }   /* nowrap = preço não quebra linha */
+
+
+/* ------------------------------------------------------------------
+   7. EQUIPE
+   ------------------------------------------------------------------ */
+.equipe {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 24px;
+}
+
+.barbeiro {
+  background: #fff;
+  border-radius: var(--raio);
+  overflow: hidden;                   /* corta a foto nos cantos arredondados */
+  box-shadow: 0 2px 10px rgba(29, 35, 41, .10);
+}
+.barbeiro img {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: cover;                  /* foto preenche sem deformar */
+  object-position: top;               /* prioriza o rosto */
+}
+.barbeiro h3 { margin: 18px 20px 4px; }
+.barbeiro p  { margin: 0 20px 22px; color: var(--texto-suave-escuro); }
+
+
+/* ------------------------------------------------------------------
+   8. AVALIAÇÕES
+   ------------------------------------------------------------------ */
+.avaliacoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 24px;
+}
+
+.avaliacoes blockquote {
+  margin: 0;                          /* blockquote vem com margem padrão; zeramos */
+  padding: 24px;
+  background: #fff;
+  border-radius: var(--raio);
+  border-top: 4px solid var(--azul);  /* detalhe azul no topo do cartão */
+  box-shadow: 0 2px 10px rgba(29, 35, 41, .10);
+}
+.avaliacoes p      { margin: 0 0 14px; font-size: 1.05rem; }
+.avaliacoes footer { font-size: .88rem; color: var(--texto-suave-escuro); }
+
+
+/* ------------------------------------------------------------------
+   9. ONDE ESTAMOS E RODAPÉ
+   ------------------------------------------------------------------ */
+.visita {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 40px;
+  align-items: start;
+}
+.visita address { font-style: normal; font-size: 1.15rem; margin: 8px 0 22px; }
+
+/* Etiquetas (Wi-Fi, Acessível...) lado a lado, quebrando de linha */
+.etiquetas { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 14px 0 24px; }
+.etiquetas li {
+  padding: 6px 14px;
+  border-radius: 999px;               /* 999px = pílula totalmente arredondada */
+  background: var(--escuro-2);
+  color: var(--texto-suave);
+  font-size: .9rem;
+}
+
+.link { color: var(--azul-claro); }
+
+/* RODAPÉ */
+.rodape {
+  padding: 40px 0 24px;
+  background: var(--escuro);
+  border-top: 1px solid rgba(255,255,255,.08);
+  color: var(--texto-suave);
+  font-size: .92rem;
+}
+
+/* Colunas lado a lado; no celular viram uma embaixo da outra sozinhas */
+.rodape__conteudo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 28px;
+}
+
+.rodape strong { color: var(--texto-claro); }
+.rodape p { margin: 6px 0 0; }
+.rodape a { text-decoration: none; }
+.rodape a:hover { color: var(--azul-claro); }
+
+/* Linha dos direitos reservados: ocupa a largura toda, com uma linha em cima */
+.rodape__direitos {
+  grid-column: 1 / -1;        /* 1 / -1 = da primeira à última coluna */
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: .85rem;
+}
+
+
+/* ------------------------------------------------------------------
+   10. CELULAR (tela até 640px)
+   @media aplica as regras abaixo só quando a tela é pequena.
+   ------------------------------------------------------------------ */
+@media (max-width: 640px) {
+  .topo__menu { display: none; }      /* esconde os links para caber o botão */
+  .secao { padding: 56px 0; }
+  .secao--sem-topo { padding-top: 0; }
+  .hero { min-height: 80vh; }
+}
+
+/* Respeita quem desativou animações no sistema */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .botao { transition: none; }
+}
+
+
+/* ------------------------------------------------------------------
+   11. MENU DE AGENDAMENTO (bottom sheet)
+   O menu que sobe de baixo quando clica em qualquer botão "Agendar".
+   Tem duas camadas: .overlay (fundo escurecido) e .sheet (o painel
+   em si, com cantos arredondados só em cima).
+   ------------------------------------------------------------------ */
+
+/* Fundo escuro atrás do menu. Começa invisível (opacity:0) e
+   "clicável só quando aberto" (pointer-events). */
+.overlay {
+  position: fixed;
+  inset: 0;                       /* atalho para top/right/bottom/left: 0 */
+  background: rgba(0,0,0,.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 20;
+}
+.overlay.aberto { opacity: 1; pointer-events: auto; }
+
+/* O painel em si. transform:translateY(100%) o mantém fora da tela,
+   embaixo; .aberto tira ele de lá. */
+.sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--escuro-2);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 30px rgba(0,0,0,.4);
+  padding: 14px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  transition: transform .3s ease;
+  z-index: 21;
+  max-width: var(--largura);
+  margin: 0 auto;                 /* centraliza em telas largas (computador) */
+}
+.sheet.aberto { transform: translateY(0); }
+
+/* Bolinha decorativa no topo do painel, como um "puxador" */
+.sheet__alca {
+  width: 36px; height: 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.25);
+  margin: 0 auto 16px;
+}
+
+.campo { margin-bottom: 18px; }
+.campo label {
+  display: block;
+  font-size: .78rem;
+  color: var(--texto-suave);
+  margin-bottom: 6px;
+}
+
+/* Campos de texto (nome e WhatsApp do cliente) */
+.campo input[type="text"],
+.campo input[type="tel"],
+.campo input[type="email"],
+.campo input[type="password"] {
+  width: 100%;
+  height: 42px;
+  border-radius: var(--raio);
+  border: 1px solid var(--linha);
+  background: var(--escuro);
+  color: var(--texto-claro);
+  padding: 0 14px;
+  font-size: .95rem;
+}
+.campo input::placeholder { color: var(--texto-suave); }
+
+/* Select nativo simples (usado só no seletor de barbeiro do admin
+   na barbeiro.html — no index.html usamos o dropdown customizado
+   acima, pra combinar mais com o visual do site do cliente) */
+.campo select {
+  width: 100%;
+  height: 42px;
+  border-radius: var(--raio);
+  border: 1px solid var(--linha);
+  background: var(--escuro);
+  color: var(--texto-claro);
+  padding: 0 14px;
+  font-size: .95rem;
+}
+
+/* ---- Seletor de barbeiro (dropdown customizado, não é <select>) ---- */
+.seletor { position: relative; }
+
+.seletor__valor {
+  width: 100%;
+  height: 42px;
+  border-radius: var(--raio);
+  border: 1px solid var(--linha);
+  background: var(--escuro);
+  color: var(--texto-claro);
+  padding: 0 14px;
+  font-size: .95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.seletor__seta { color: var(--texto-suave); font-size: .75rem; transition: transform .15s ease; }
+.seletor__valor.aberto .seletor__seta { transform: rotate(180deg); }
+
+.seletor__lista {
+  position: absolute;
+  left: 0; right: 0; top: calc(100% + 6px);
+  background: var(--escuro-3);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  overflow: hidden;
+  z-index: 5;
+  display: none;
+}
+.seletor__lista.aberto { display: block; }
+
+.seletor__opcao {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--linha);
+  color: var(--texto-claro);
+  font-size: .95rem;
+  text-align: left;
+}
+.seletor__opcao:last-child { border-bottom: none; }
+
+.seletor__radio {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--texto-suave);
+  flex: 0 0 auto;
+  position: relative;
+}
+.seletor__opcao.ativo .seletor__radio { border-color: var(--azul-claro); }
+.seletor__opcao.ativo .seletor__radio::after {
+  content: "";
+  position: absolute; inset: 2px;
+  border-radius: 50%;
+  background: var(--azul-claro);
+}
+
+/* ---- Fileira que rola na horizontal (meses, horários) ----
+   As 3 linhas de scrollbar-* escondem a barra de rolagem em
+   Chrome/Edge, Firefox e Safari, sem tirar a rolagem por toque. */
+.fileira-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* Edge antigo */
+}
+.fileira-scroll::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+.pilula {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--linha);
+  background: transparent;
+  color: var(--texto-claro);
+  font-size: .85rem;
+}
+.pilula.ativo {
+  background: var(--azul);
+  border-color: var(--azul);
+  color: #fff;
+}
+.pilula:disabled {
+  color: var(--texto-fraco);
+  border-color: transparent;
+}
+
+/* Cabeçalho dos dias da semana, em cima da grade de dias */
+.semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.semana span {
+  text-align: center;
+  font-size: .72rem;
+  color: var(--texto-suave);
+}
+
+/* Legenda curta explicando a cor de ocupação da bolinha */
+.dia__legenda {
+  font-size: .78rem;
+  color: var(--texto-suave);
+  margin: 0 0 10px;
+}
+
+/* Grade de dias: 7 colunas, e aspect-ratio:1/1 trava largura = altura
+   pra virarem círculos de verdade, sem achatar. min-height é uma
+   segurança pra navegadores que não entendem aspect-ratio. */
+.grade-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.dia {
+  position: relative;
+  overflow: hidden;           /* corta o "líquido" no formato do círculo */
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  min-height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--linha);
+  background: transparent;
+  color: var(--texto-claro);
+  font-size: .85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.dia.ativo {
+  background: var(--azul); /* dia escolhido: sempre azul sólido */
+  border-color: var(--azul);
+  color: #fff;
+}
+/* Quando o dia está selecionado (azul), esconde o líquido —
+   senão a cor de ocupação ficaria por cima do azul. */
+.dia.ativo .dia__liquido { display: none; }
+
+/* O "líquido": um retângulo que sobe de baixo pra cima dentro do
+   círculo. O círculo (.dia) corta as pontas dele com overflow:hidden,
+   então não precisa desenhar a forma redonda aqui, só a altura. */
+.dia__liquido {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 0%;                        /* JS troca isso conforme a ocupação */
+  background-color: transparent;     /* JS troca isso pela cor verde→vermelho */
+}
+
+/* A "ondinha": uma tira fininha em cima do líquido, recortada no
+   formato de onda usando uma máscara SVG. Não se move sozinha (sem
+   animação) — é só o contorno de cima ficar ondulado em vez de reto.
+   background-color:inherit puxa a MESMA cor do líquido logo abaixo,
+   então não precisamos repetir a cor aqui. */
+.dia__liquido::before {
+  content: "";
+  position: absolute;
+  left: -6px; right: -6px; top: -5px;
+  height: 8px;
+  background-color: inherit;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 10'%3E%3Cpath d='M0,5 Q6,0 12,5 T24,5 V10 H0 Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 10'%3E%3Cpath d='M0,5 Q6,0 12,5 T24,5 V10 H0 Z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: 14px 8px;
+  mask-size: 14px 8px;
+}
+
+/* O número do dia precisa ficar por CIMA do líquido */
+.dia__numero {
+  position: relative;
+  z-index: 1;
+}
+.dia:disabled {
+  border-color: transparent;
+  color: var(--texto-fraco);
+}
+.dia-vazio { aspect-ratio: 1 / 1; } /* espaço em branco antes do dia 1 do mês */
+
+.horarios__aviso {
+  font-size: .85rem;
+  color: var(--texto-suave);
+  margin: 4px 0 18px;
+}
+
+.sheet__botoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+.sheet__botoes .botao { height: 44px; font-size: .9rem; }
+
+
+/* ------------------------------------------------------------------
+   12. PÁGINA DO BARBEIRO (login e agenda)
+   Tudo específico da barbeiro.html. As peças comuns (botão, campo,
+   fileira de meses, grade de dias) já vêm das seções anteriores.
+   ------------------------------------------------------------------ */
+
+/* Variação "perigo": pro botão de Desmarcar, um contorno avermelhado
+   em vez do cinza padrão do .botao--contorno, pra deixar claro que é
+   uma ação que desfaz um agendamento. */
+.botao--perigo {
+  background: transparent;
+  color: #ff9b8a;
+  box-shadow: inset 0 0 0 2px rgba(255, 107, 80, .55);
+}
+.botao--perigo:hover { background: rgba(255, 107, 80, .12); }
+
+/* Tela de login: um cartão centralizado na página */
+.login-tela {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.login-cartao {
+  width: 100%;
+  max-width: 360px;
+  background: var(--escuro-2);
+  border-radius: var(--raio);
+  border: 1px solid var(--linha);
+  padding: 32px 28px;
+}
+.login-cartao h1 {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+.login-cartao p.login-subtitulo {
+  color: var(--texto-suave);
+  font-size: .9rem;
+  margin: 0 0 24px;
+}
+.login-cartao .campo { margin-bottom: 16px; }
+.login-erro {
+  color: #ff9b8a;
+  font-size: .85rem;
+  margin: -6px 0 16px;
+  display: none; /* JS mostra quando precisa */
+}
+
+/* Barra de topo da agenda: nome do barbeiro logado + botão sair */
+.topo-barbeiro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--linha);
+  margin-bottom: 24px;
+}
+.topo-barbeiro p { margin: 0; color: var(--texto-suave); font-size: .85rem; }
+.topo-barbeiro strong { display: block; color: var(--texto-claro); font-size: 1.1rem; }
+
+/* Lista de horários do dia escolhido, um embaixo do outro */
+.agenda-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.agenda-horario {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--linha);
+}
+.agenda-horario__hora {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 1.05rem;
+  width: 58px;
+  flex: 0 0 auto;
+}
+.agenda-horario__info { flex: 1; min-width: 0; }
+.agenda-horario__status {
+  display: block;
+  font-size: .78rem;
+  color: var(--texto-suave);
+}
+.agenda-horario__cliente {
+  display: block;
+  font-size: .95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agenda-horario__acoes {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.agenda-horario__acoes .botao,
+.agenda-horario__acoes a.botao {
+  height: 34px;
+  padding: 0 12px;
+  font-size: .78rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Pontinho colorido antes do status (livre/ocupado/bloqueado) */
+.bolinha-status {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.bolinha-status--livre { background: #4caf7d; }
+.bolinha-status--ocupado { background: #e0a940; }
+.bolinha-status--bloqueado { background: #ff6b50; }
