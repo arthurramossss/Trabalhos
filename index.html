@@ -30,7 +30,9 @@
        ============================================================ -->
   <header class="topo">
     <div class="container topo__conteudo">
-      <a class="topo__logo" href="#inicio">JL Barbearia</a>
+      <!-- id="logoTopo" é usado pelo script lá no fim da página pra
+           detectar 5 toques seguidos e abrir a área do barbeiro -->
+      <a class="topo__logo" href="#inicio" id="logoTopo">JL Barbearia</a>
 
       <!-- <nav> = grupo de links de navegação -->
       <nav class="topo__menu">
@@ -751,6 +753,32 @@
 
   // Monta o calendário do mês atual assim que a página carrega
   montarCalendario();
+
+  // ============================================================
+  // Acesso escondido pra área do barbeiro: toca 5 vezes seguidas
+  // no nome "JL Barbearia" no topo pra abrir o barbeiro.html.
+  // Pra um cliente comum, continua parecendo só o nome do site —
+  // não tem nenhum link visível nem no código da página.
+  // ============================================================
+  (function(){
+    var logo = document.getElementById('logoTopo');
+    var toques = 0;
+    var ultimoToque = 0;
+
+    logo.addEventListener('click', function(e){
+      var agora = Date.now();
+      // Se demorou mais de 1,5s desde o toque anterior, reinicia a contagem
+      if(agora - ultimoToque > 1500){ toques = 0; }
+      ultimoToque = agora;
+      toques++;
+
+      if(toques >= 5){
+        e.preventDefault(); // não deixa rolar a página dessa vez
+        toques = 0;
+        window.location.href = 'barbeiro.html';
+      }
+    });
+  })();
   </script>
 
 </body>
