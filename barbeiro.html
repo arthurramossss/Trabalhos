@@ -14,7 +14,30 @@
 </head>
 <body>
 
-  
+  <!-- ============================================================
+       TELA DE LOGIN
+       Aparece primeiro. Some (display:none) assim que o login dá
+       certo, e a tela da agenda (mais embaixo) aparece no lugar.
+       ============================================================ -->
+  <div class="login-tela" id="telaLogin">
+    <div class="login-cartao">
+      <h1>Área do Barbeiro</h1>
+      <p class="login-subtitulo">Entre com a conta cadastrada pra ver e gerenciar sua agenda.</p>
+
+      <p class="login-erro" id="loginErro"></p>
+
+      <div class="campo">
+        <label for="loginEmail">E-mail</label>
+        <input type="email" id="loginEmail" placeholder="seuemail@exemplo.com" autocomplete="username">
+      </div>
+      <div class="campo">
+        <label for="loginSenha">Senha</label>
+        <input type="password" id="loginSenha" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button type="button" class="botao" id="btnEntrar" style="width:100%">Entrar</button>
+    </div>
+  </div>
 
   <!-- ============================================================
        TELA DA AGENDA
@@ -31,7 +54,7 @@
           <strong id="nomeBarbeiroLogado">—</strong>
         </div>
         <button type="button" class="botao botao--contorno" id="btnSair">Sair</button>
-   </div>
+      </div>
 
       <!-- Só aparece pro admin (dev): escolher de qual barbeiro ver
            a agenda. Um barbeiro comum nem vê esse campo. -->
@@ -92,6 +115,20 @@
   }
 
   // ============================================================
+  // Checagem de arquivos: se a biblioteca do Supabase ou o
+  // dados-horarios.js não carregaram (arquivo faltando na pasta,
+  // sem internet, link errado), avisa na hora em vez de deixar o
+  // botão "Entrar" travar sem explicação nenhuma.
+  // ============================================================
+  if(typeof window.supabase === 'undefined'){
+    mostrarErroLogin('Não consegui carregar a biblioteca do Supabase. Confere sua internet.');
+    btnEntrar.disabled = true;
+  } else if(typeof supabaseClient === 'undefined'){
+    mostrarErroLogin('O arquivo dados-horarios.js não carregou. Confere se ele está na mesma pasta do barbeiro.html.');
+    btnEntrar.disabled = true;
+  }
+
+  // ============================================================
   // Descobre qual barbeiro é essa conta (tabela "perfis"), e se é
   // uma conta admin (dev) — que enxerga a agenda de qualquer um.
   // ============================================================
@@ -102,7 +139,7 @@
 
     var resultado = await supabaseClient
       .from('perfis')
-      .select('nome_barbeiro, eh_admin')
+      .select('nome_barbeiro, eh_admin, nome_exibicao')
       .eq('id', usuario.id)
       .single();
 
@@ -120,11 +157,13 @@
   async function entrarNaAgenda(perfil){
     if(perfil.eh_admin){
       // Admin: mostra o seletor e começa vendo a agenda do primeiro
-      // barbeiro da lista (dá pra trocar depois).
+      // barbeiro da lista (dá pra trocar depois). O nome no topo é
+      // o do ADMIN (pessoa logada), não o do barbeiro selecionado —
+      // essas são coisas diferentes agora.
       campoTrocarBarbeiro.style.display = 'block';
       barbeiroAtual = perfil.nome_barbeiro || seletorAdminBarbeiro.value;
       seletorAdminBarbeiro.value = barbeiroAtual;
-      nomeBarbeiroLogado.textContent = barbeiroAtual + ' (admin)';
+      nomeBarbeiroLogado.textContent = perfil.nome_exibicao || 'Admin';
     } else {
       campoTrocarBarbeiro.style.display = 'none';
       barbeiroAtual = perfil.nome_barbeiro;
@@ -139,9 +178,9 @@
   }
 
   // Quando o admin troca de barbeiro no seletor, recarrega a agenda
+  // (o nome no topo continua sendo o do admin, só a agenda muda)
   seletorAdminBarbeiro.onchange = async function(){
     barbeiroAtual = seletorAdminBarbeiro.value;
-    nomeBarbeiroLogado.textContent = barbeiroAtual + ' (admin)';
     await montarCalendario();
   };
 
@@ -155,24 +194,34 @@
     btnEntrar.disabled = true;
     btnEntrar.textContent = 'Entrando...';
 
-    var resultado = await supabaseClient.auth.signInWithPassword({ email: email, password: senha });
+    // O try/catch aqui é importante: sem ele, se qualquer coisa
+    // desse bloco falhar (por exemplo, o site não conseguir se
+    // conectar com o Supabase), o botão ficava travado em
+    // "Entrando..." pra sempre, sem mostrar nenhum erro pra pessoa
+    // nem pra gente saber o que aconteceu.
+    try {
+      var resultado = await supabaseClient.auth.signInWithPassword({ email: email, password: senha });
 
-    btnEntrar.disabled = false;
-    btnEntrar.textContent = 'Entrar';
+      if(resultado.error){
+        mostrarErroLogin('E-mail ou senha incorretos.');
+        return;
+      }
 
-    if(resultado.error){
-      mostrarErroLogin('E-mail ou senha incorretos.');
-      return;
+      var perfil = await carregarPerfilDoBarbeiro();
+      if(!perfil){
+        mostrarErroLogin('Essa conta ainda não está vinculada a nenhum barbeiro. Fale com quem cuida do site.');
+        await supabaseClient.auth.signOut();
+        return;
+      }
+
+      entrarNaAgenda(perfil);
+    } catch(erro) {
+      console.error('Erro ao entrar:', erro);
+      mostrarErroLogin('Não consegui conectar agora (erro: ' + erro.message + '). Confere sua internet e tenta de novo.');
+    } finally {
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = 'Entrar';
     }
-
-    var perfil = await carregarPerfilDoBarbeiro();
-    if(!perfil){
-      mostrarErroLogin('Essa conta ainda não está vinculada a nenhum barbeiro. Fale com quem cuida do site.');
-      await supabaseClient.auth.signOut();
-      return;
-    }
-
-    entrarNaAgenda(perfil);
   };
 
   // ---------- Botão Sair ----------
@@ -215,7 +264,7 @@
         mesSelecionado = indice;
         montarCalendario();
       };
-      mesesEl.appendChild(b);9
+      mesesEl.appendChild(b);
     });
   }
 
