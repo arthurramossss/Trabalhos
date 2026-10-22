@@ -14,8 +14,8 @@
 // de ficar aqui no código do site, foi feita pra isso. As regras
 // de segurança de verdade ficam no banco (veja os arquivos
 // criar-tabela-agendamentos.sql e atualizar-tabela-barbeiros.sql).
-var SUPABASE_URL = 'https://knquzjetutamwytnqnnu.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_uCmoOoa760zXW_9MdxzM6Q_YKap3qoB';
+var SUPABASE_URL = 'https://zxmzbpeqglcxoyxsmzxe.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_9JVaq55qNtC2SmP8z9ZyFQ_GX_G5Tl3';
 var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ---------- Nomes usados nos calendários ----------
